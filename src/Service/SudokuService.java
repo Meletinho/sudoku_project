@@ -218,6 +218,20 @@ public class SudokuService {
         return value >= 1 && value <= 9;
     }
 
+    public GameStatus getGameStatus() {
+        if (!gameStarted) {
+            return GameStatus.NOT_STARTED;
+        } else if (isComplete()) {
+            return GameStatus.COMPLETE;
+        }else {
+            return GameStatus.IMCOMPLETE;
+        }
+    }
+
+    public boolean isGameStarted(){
+        return gameStarted;
+    }
+
 
 
 }

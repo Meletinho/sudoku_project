@@ -1,6 +1,7 @@
 package Controller;
 
 
+import Model.GameStatus;
 import Service.SudokuService;
 import View.SudokuView;
 
@@ -38,23 +39,33 @@ public class SudokuController {
     public void start() {
         System.out.println("Bem-vindo ao Jogo Sudoku!");
         while (running) {
-          view.displayMenu();
-          int choice = scanner.nextInt();
+            view.displayMenu();
+            int choice = scanner.nextInt();
 
-          switch (choice){
-              case 1 -> startNewGame();
-              case 2 -> addNumber();
-              case 3 -> removeNumber();
-              case 4 -> viewGame();
-              case 5 -> checkStatus();
-              case 6 -> clearGame();
-              case 7 -> finishGame();
-              case 0 -> exitGame();
-              default -> view.displayError("Opção inválida!");
+            switch (choice) {
+                case 1 -> startNewGame();
+                case 2 -> addNumber();
+                case 3 -> removeNumber();
+                case 4 -> viewGame();
+                case 5 -> checkStatus();
+                case 6 -> clearGame();
+                case 7 -> finishGame();
+                case 0 -> exitGame();
+                default -> view.displayError("Opção inválida!");
 
-          }
+            }
         }
+
     }
+
+    private boolean isGameStarted() {
+        if (service.getGameStatus() == GameStatus.NOT_STARTED) {
+            view.displayError("O jogo não foi iniciado. Use a opção 1 primeiro.");
+            return false;
+        }
+        return true;
+    }
+
 
     private void startNewGame() {
         if(!isGameStarted()) return;
@@ -76,6 +87,23 @@ public class SudokuController {
         }
 
 
+    }
+
+    public void addNumber() {
+        if(!isGameStarted()){
+            view.displayBoard();
+            System.out.println("\n=== ADICIONAR NUMERO ===");
+            int row = getCoordinate("linha (0 - 8): ");
+            int col = getCoordinate("coluna (0 -8): ");
+
+            boolean sucess = service.removeNumber(row, col);
+            if(!sucess) {
+                view.displaySucess("Você adcionou um numero!");
+                view.displayBoard();
+            }else {
+                view.displayError("Número não adcionado");
+            }
+        }
     }
 
     //Fluxo para remover número: solicita posição e válida
@@ -124,13 +152,16 @@ public class SudokuController {
         if(!isGameStarted()) return;
         if(service.isComplete() && !service.hasErrors()){
             view.displaySucess("Parabéns! Você completou o Sudoku");
+            running = false;
         }
-        running = false;
+
         else{
             view.displayError("O jogo não está completo!. Continue Jogando");
             view.displayGameStatus();
         }
+
     }
+
 
     public void exitGame() {
         System.out.println("Obrigado por jogar!");
@@ -153,11 +184,11 @@ public class SudokuController {
         int value;
         do{
             System.out.print("Digite um numero: ");
-            value = getInput();
+            value = getIntInput();
         }while(value < 1 || value > 9);
         return value;
     }
-    private int getInput() {
+    private int getIntInput() {
         while(!scanner.hasNextInt()) {
             System.out.print("Digite um numero: ");
             scanner.nextInt();
