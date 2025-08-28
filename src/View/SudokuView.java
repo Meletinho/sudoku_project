@@ -4,7 +4,7 @@ import Model.GameStatus;
 import Model.SudokuCell;
 import Service.SudokuService;
 
-public class View {
+public class SudokuView {
 
     private final SudokuService service;
 
